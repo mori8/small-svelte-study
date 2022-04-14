@@ -1,30 +1,29 @@
 <script>
-	export let name;
+  import { writable } from 'svelte/store'
+  import Todo from './Todo.svelte'
+
+  let title = ''; 
+  let todos = writable([]);
+  let id = 0;
+
+  function createTodo() {
+    $todos.push({
+      id,
+      title
+    }) // 배열에 아이템을 추가하는 것은 할당이 아님. 따라서 화면이 바뀌지 않음
+    $todos = $todos; // 할당으로 반응성 유지 - svelte에서 자주 볼 코드
+    title = '';
+    id += 1;
+  }
 </script>
 
-<main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
+<input bind:value={title}
+      type="text"
+      on:keydown={(e) => {e.key === 'Enter' && createTodo()}}>
+<button on:click={createTodo}>
+	Create Todo
+</button>
 
-<style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
-
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
-</style>
+{#each $todos as todo}
+  <Todo {todos} {todo} />
+{/each}
